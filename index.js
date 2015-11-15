@@ -70,16 +70,18 @@ function loop(oplog, ts, callback) {
             cursor.next(processItem);
           });
         });
-      } else if (err && !err.tailable) {
-        console.log(err.message);
-        setTimeout(function () {
-          loop(oplog, ts, callback);
-        }, 1000);
-      } else {
+      } else if (err && err.tailable) {
+        // tailable=true なら引き続き監視可能
         console.log((new Date()).toISOString() + " " + err.message);
         setTimeout(function () {
           cursor.next(processItem);
         }, op ? 0 : 1000);
+      } else {
+        // 本当に切れた場合(MongoDB再起動等)は、findからやり直し
+        console.log(err.message);
+        setTimeout(function () {
+          loop(oplog, ts, callback);
+        }, 1000);
       }
     }
 
