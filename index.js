@@ -10,6 +10,12 @@ var mongodb_url = "mongodb://127.0.0.1:27017/local";
 var esearch_url = "http://localhost:9200";
 var posfile = "./posfile";
 
+/**
+ * ElasticSearch 更新
+ * @param db
+ * @param op
+ * @param callback
+ */
 function update(db, op, callback) {
   var tags = op.ns.split(/^([^.]+)\./);
   var coll = db.db(tags[1]).collection(tags[2]);
@@ -41,6 +47,12 @@ function update(db, op, callback) {
   });
 }
 
+/**
+ * MongoDB 監視
+ * @param oplog
+ * @param ts
+ * @param callback
+ */
 function loop(oplog, ts, callback) {
   var condition = {ts: {$gt: ts}};
   var option = {tailable: true};
@@ -70,6 +82,9 @@ function loop(oplog, ts, callback) {
   });
 }
 
+/**
+ * メイン
+ */
 async.waterfall([
   function (next) {
     mongodb.MongoClient.connect(mongodb_url, function (err, db) {
