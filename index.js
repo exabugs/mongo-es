@@ -8,7 +8,7 @@ var Timestamp = mongodb.Timestamp;
 
 var mongodb_url = "mongodb://127.0.0.1:27017/local";
 var esearch_url = "http://localhost:9200";
-var posfile = "./logs/pos";
+var posfile = "./posfile";
 
 function update(db, op, callback) {
   var tags = op.ns.split(/^([^.]+)\./);
