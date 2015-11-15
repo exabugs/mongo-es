@@ -61,6 +61,7 @@ function loop(oplog, ts, callback) {
     function processItem(err, op) {
       if (op) {
         ts = op.ts;
+        // 更新処理
         update(oplog.s.db, op, function (err) {
           var message = err ? err.message : "Update ElasticSearch";
           console.log((new Date()).toISOString() + " " + message);
