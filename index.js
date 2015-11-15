@@ -61,8 +61,9 @@ function loop(oplog, ts, callback) {
     function processItem(err, op) {
       if (op) {
         ts = op.ts;
-        update(oplog.s.db, op, function () {
-          console.log((new Date()).toISOString() + " Update ElasticSearch");
+        update(oplog.s.db, op, function (err) {
+          var message = err ? err.message : "Update ElasticSearch";
+          console.log((new Date()).toISOString() + " " + message);
           fs.writeFileSync(posfile, ts);
           setImmediate(function () {
             cursor.next(processItem);
