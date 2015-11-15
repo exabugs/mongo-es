@@ -59,12 +59,13 @@ function loop(oplog, ts, callback) {
   oplog.find(condition, option, function (err, cursor) {
 
     function processItem(err, op) {
+      var now = (new Date()).toISOString();
       if (op) {
         ts = op.ts;
         // 更新処理
         update(oplog.s.db, op, function (err) {
           var message = err ? err.message : "Update ElasticSearch";
-          console.log((new Date()).toISOString() + " " + message);
+          console.log(now + " " + message);
           fs.writeFileSync(posfile, ts); // どこまで処理したか記憶する
           setImmediate(function () {
             cursor.next(processItem);
@@ -72,13 +73,13 @@ function loop(oplog, ts, callback) {
         });
       } else if (err && err.tailable) {
         // tailable=true なら引き続き監視可能
-        console.log((new Date()).toISOString() + " " + err.message);
+        console.log(now + " " + err.message);
         setTimeout(function () {
           cursor.next(processItem);
         }, 1000);
       } else {
         // 本当に切れた場合(MongoDB再起動等)は、findからやり直し
-        console.log(err.message);
+        console.log(now + " " + err.message);
         setTimeout(function () {
           loop(oplog, ts, callback);
         }, 1000);
