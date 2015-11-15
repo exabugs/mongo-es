@@ -65,7 +65,7 @@ function loop(oplog, ts, callback) {
         update(oplog.s.db, op, function (err) {
           var message = err ? err.message : "Update ElasticSearch";
           console.log((new Date()).toISOString() + " " + message);
-          fs.writeFileSync(posfile, ts);
+          fs.writeFileSync(posfile, ts); // どこまで処理したか記憶する
           setImmediate(function () {
             cursor.next(processItem);
           });
