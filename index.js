@@ -61,9 +61,12 @@ function loop(oplog, ts, callback) {
     function processItem(err, op) {
       if (op) {
         ts = op.ts;
-        fs.writeFileSync(posfile, ts);
         update(oplog.s.db, op, function () {
-          cursor.next(processItem);
+          console.log((new Date()).toISOString() + " Update ElasticSearch");
+          fs.writeFileSync(posfile, ts);
+          setImmediate(function () {
+            cursor.next(processItem);
+          });
         });
       } else if (err && !err.tailable) {
         console.log(err.message);
