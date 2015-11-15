@@ -75,7 +75,7 @@ function loop(oplog, ts, callback) {
         console.log((new Date()).toISOString() + " " + err.message);
         setTimeout(function () {
           cursor.next(processItem);
-        }, op ? 0 : 1000);
+        }, 1000);
       } else {
         // 本当に切れた場合(MongoDB再起動等)は、findからやり直し
         console.log(err.message);
