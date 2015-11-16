@@ -110,7 +110,7 @@ async.waterfall([
 
     var ts;
     try {
-      ts = Timestamp.fromString(fs.readFileSync(posfile).toString());
+      ts = Timestamp.fromString(fs.readFileSync(posfile, "utf-8"));
     } catch (err) {
       var now = Math.floor((new Date()).getTime() / 1000);
       ts = new Timestamp(0, now);
