@@ -9,6 +9,7 @@ var Timestamp = mongodb.Timestamp;
 var mongodb_url = "mongodb://127.0.0.1:27017/local";
 var esearch_url = "http://localhost:9200";
 var posfile = "./posfile";
+var WAIT = 1000;
 
 /**
  * ElasticSearch 更新
@@ -64,7 +65,9 @@ function loop(oplog, ts, callback) {
         update(oplog.s.db, op, function (err) {
           if (err) {
             log(err.message);
-            callback(err);
+            setTimeout(function () {
+              loop(oplog, ts, callback);
+            }, WAIT);
           } else {
             log("Update ElasticSearch");
             ts = op.ts;
@@ -79,13 +82,13 @@ function loop(oplog, ts, callback) {
         log(err.message);
         setTimeout(function () {
           cursor.next(processItem);
-        }, 1000);
+        }, WAIT);
       } else {
         // 本当に切れた場合(MongoDB再起動等)は、findからやり直し
         log(err.message);
         setTimeout(function () {
           loop(oplog, ts, callback);
-        }, 1000);
+        }, WAIT);
       }
     }
 
