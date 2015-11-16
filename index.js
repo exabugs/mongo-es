@@ -60,14 +60,19 @@ function loop(oplog, ts, callback) {
 
     function processItem(err, op) {
       if (op) {
-        ts = op.ts;
         // 更新処理
         update(oplog.s.db, op, function (err) {
-          log(err ? err.message : "Update ElasticSearch");
-          fs.writeFileSync(posfile, ts); // どこまで処理したか記憶する
-          setImmediate(function () {
-            cursor.next(processItem);
-          });
+          if (err) {
+            log(err.message);
+            callback(err);
+          } else {
+            log("Update ElasticSearch");
+            ts = op.ts;
+            fs.writeFileSync(posfile, ts); // どこまで処理したか記憶する
+            setImmediate(function () {
+              cursor.next(processItem);
+            });
+          }
         });
       } else if (err && err.tailable) {
         // tailable=true なら引き続き監視可能
