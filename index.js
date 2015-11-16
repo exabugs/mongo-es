@@ -64,11 +64,13 @@ function loop(oplog, ts, callback) {
         // 更新処理
         update(oplog.s.db, op, function (err) {
           if (err) {
+            // 更新失敗
             log(err.message);
             setTimeout(function () {
               loop(oplog, ts, callback);
             }, WAIT);
           } else {
+            // 更新成功
             log("Update ElasticSearch");
             ts = op.ts;
             fs.writeFileSync(posfile, ts); // どこまで処理したか記憶する
